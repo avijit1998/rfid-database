@@ -55,7 +55,7 @@ void loop() {
 //  Serial.print("DATA,TIME,");
 //  Serial.print(milli_time);
 //  Serial.print(",");
-  Serial.println(strID);
+  Serial.print(strID+',');
 
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
