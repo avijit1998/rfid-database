@@ -1,12 +1,13 @@
 import processing.serial.*; //<>//
 
 Serial mySerial;
-Table tableS,tableB,table;
+Table tableS,tableB,tableI,table;
 int a = 0,b;
 String temp = null;
 String t = "nothing";
 int count;
 String value;
+
 void setup() {
   
   mySerial = new Serial(this,"COM10",9600); 
@@ -43,8 +44,9 @@ void draw(){
       scanbooks(value);
     
     if(count >= 3){
-      int row = updateNumberOfBooks(temp,count);
-      println("you issued "+tableS.getInt(row,"number of books")+" books");
+      
+      //println("you issued "+tableS.getInt(row,"number of books")+" books");
+      println("you issued" + numberOfBooksUnderID(temp) + " books");
       a = 0;
       count = 0;
       println("you can enter 3 at a time atmost");
@@ -90,15 +92,24 @@ void scanbooks(String value){
         a = 0;
         b = 0;
         println("the student did not issue any book");
+        int row = updateNumberOfBooks(temp);
+        //println("you issued "+tableS.getInt(row,"number of books")+" books");
+        println("you issued" + numberOfBooksUnderID(temp) + " books");
         println("lets get to next student");
       }
       else if(value.equals(temp) == true && count > 0){
         a = 0;
         b = 0;
+        String[] s = booksUnderID(temp);
         
-        int row = updateNumberOfBooks(temp,count);
-        println("you issued "+tableS.getInt(row,"number of books")+" books");
         
+        //println("you issued "+tableS.getInt(row,"number of books")+" books");
+        println("you issued" + numberOfBooksUnderID(temp) + " books");
+        println("books issued by you");
+        for(int k = 0;k < s.length ; k++){
+          if(s[k] != null)
+            println(s[k]);
+        }
         count = 0;
         println("lets get to next student");
       }
@@ -112,7 +123,7 @@ int issueBook(String book_id,String stud_id){
   flag = checkWhetherBook(book_id,stud_id);
   
   if(book_id !=null && flag != 0 && book_id.equals(t) == false){
-    //println(getBID(book_id));
+    
     TableRow newRow = table.addRow();
     newRow.setString("data", book_id);
     t = book_id;
@@ -120,7 +131,7 @@ int issueBook(String book_id,String stud_id){
   }
   return count;
 }
-//&& temp.equals(tableB.getString(i,"issued under")) == true
+
 int checkWhetherBook(String book_id,String stud_id){
   
   for(int  i = 0 ;i < tableB.getRowCount(); i++ ){
@@ -134,17 +145,27 @@ int checkWhetherBook(String book_id,String stud_id){
         return 1;
       }
       else if(book_id.equals(tableB.getString(i,"rfid")) == true && tableB.getInt(i,"issue(0/1)") == 1 ){
-        println("the book is issued under " + getSID(tableB.getString(i,"issued under")));
+        
+        if(getSID(tableB.getString(i,"issued under")) == getSID(stud_id)){
+          
+          tableB.setInt(i,"issue(0/1)",0);
+          tableB.setString(i,"issued under",null);
+          println("book returned");
+        }
+      else{
+          println("the book is issued under " + getSID(tableB.getString(i,"issued under")));
+        }
       }
   }
   return 0;
 }
 
-int updateNumberOfBooks(String tem,int c){
+int updateNumberOfBooks(String tem){
+  println(tem);
   for(int  i = 0 ;i < tableS.getRowCount(); i++ ){
     if(tem.equals(tableS.getString(i,"rfid")) == true){
       
-      tableS.setInt(i,"number of books",c);
+      tableS.setInt(i,"number of books",numberOfBooksUnderID(tem));
       return i;
     }
   }
@@ -165,4 +186,31 @@ String getBID(String rfid){
       return tableB.getString(i,"bid");
   }
   return null;
+}
+
+String[] booksUnderID(String stud_id){
+  int j = 0;
+  String[] str  = new String[tableB.getRowCount()];
+  for(int i = 0;i < tableB.getRowCount();i++){
+    if(tableB.getString(i,"issued under") != null){
+      if(tableB.getString(i,"issued under").equals(stud_id) == true){
+      
+      str[j++] = tableB.getString(i,"bid");
+    }
+    }
+  }
+  return str;
+}
+
+int numberOfBooksUnderID(String stud_id){
+  int j = 0;
+  for(int i = 0;i < tableB.getRowCount();i++){
+    if(tableB.getString(i,"issued under") != null){
+      
+      if(tableB.getString(i,"issued under").equals(stud_id) == true){
+        j++;
+      }
+    }
+  }
+  return j;
 }
