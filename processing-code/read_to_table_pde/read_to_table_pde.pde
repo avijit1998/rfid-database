@@ -83,7 +83,7 @@ void scanbooks(String value){
     
       if(value.equals(temp) == false){
         
-        count = issueBook(value);
+        count = issueBook(value,temp);
         b = 0;
       }
       else if(value.equals(temp) == true && b > 0 ){
@@ -105,13 +105,14 @@ void scanbooks(String value){
     }
 }
 
-int issueBook(String value){
-  String book_id = value;
+int issueBook(String book_id,String stud_id){
+  
   int flag = 0;
-  flag = checkWhetherBook(book_id);
+  
+  flag = checkWhetherBook(book_id,stud_id);
   
   if(book_id !=null && flag != 0 && book_id.equals(t) == false){
-    println(book_id);
+    //println(getBID(book_id));
     TableRow newRow = table.addRow();
     newRow.setString("data", book_id);
     t = book_id;
@@ -119,12 +120,21 @@ int issueBook(String value){
   }
   return count;
 }
-
-int checkWhetherBook(String book_id){
+//&& temp.equals(tableB.getString(i,"issued under")) == true
+int checkWhetherBook(String book_id,String stud_id){
+  
   for(int  i = 0 ;i < tableB.getRowCount(); i++ ){
-      
-      if(book_id.equals(tableB.getString(i,"rfid")) == true){
+          
+      if(book_id.equals(tableB.getString(i,"rfid")) == true && tableB.getInt(i,"issue(0/1)") == 0){
+        println(tableB.getString(i,"bookname"));
+        
+        tableB.setInt(i,"issue(0/1)",1);
+        tableB.setString(i,"issued under",stud_id);
+        
         return 1;
+      }
+      else if(book_id.equals(tableB.getString(i,"rfid")) == true && tableB.getInt(i,"issue(0/1)") == 1 ){
+        println("the book is issued under " + getSID(tableB.getString(i,"issued under")));
       }
   }
   return 0;
@@ -133,10 +143,26 @@ int checkWhetherBook(String book_id){
 int updateNumberOfBooks(String tem,int c){
   for(int  i = 0 ;i < tableS.getRowCount(); i++ ){
     if(tem.equals(tableS.getString(i,"rfid")) == true){
-      println("The user is " + tableS.getString(i,"sid"));
+      
       tableS.setInt(i,"number of books",c);
       return i;
     }
   }
   return -1;
+}
+
+String getSID(String rfid){
+  for(int  i = 0 ;i < tableS.getRowCount(); i++ ){
+    if(rfid.equals(tableS.getString(i,"rfid")) == true)
+      return tableS.getString(i,"sid");
+  }
+  return null;
+}
+
+String getBID(String rfid){
+  for(int  i = 0 ;i < tableB.getRowCount(); i++ ){
+    if(rfid.equals(tableB.getString(i,"rfid")) == true)
+      return tableB.getString(i,"bid");
+  }
+  return null;
 }

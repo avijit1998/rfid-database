@@ -10,6 +10,7 @@ void setup() {
   table.addColumn("rfid");
   table.addColumn("bid");
   table.addColumn("issue(0/1)",Table.INT);
+  table.addColumn("issued under",Table.STRING);
 }
 
 void draw() {
@@ -21,7 +22,8 @@ void draw() {
       newRow.setString("rfid", id);
       newRow.setString("bid", "B1");
       newRow.setInt("issue(0/1)",0);
-      
+      newRow.setString("issued under",null);
+
     }
     saveTable(table, "books/bid.csv");
   }
