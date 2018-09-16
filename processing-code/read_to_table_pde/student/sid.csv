@@ -1,2 +1,3 @@
-data,sid
-"12:9B:8D:2F,",B416057
+rfid,sid,number of books
+"BB:34:25:D9,",B416057,15
+"1D:89:43:73,",B216037,0
