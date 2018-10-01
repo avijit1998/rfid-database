@@ -9,8 +9,16 @@ MFRC522 rfid(SS_PIN, RST_PIN);
 
 MFRC522::MIFARE_Key key;
 
+unsigned long int milli_time;
+
+float voltage;
+
 void setup() {
   Serial.begin(9600);
+  
+//  Serial.println("CLEARDATA");
+//  Serial.println("LABEL,Computer Time,Time (Milli Sec.),Id");  
+  
   SPI.begin();
   rfid.PCD_Init();
 }
@@ -42,6 +50,11 @@ void loop() {
   strID.toUpperCase();
 
   //Serial.print("Tap card key: ");
+  milli_time = millis();
+  voltage = 5.0 * analogRead(A0) / 1024.0;
+//  Serial.print("DATA,TIME,");
+//  Serial.print(milli_time);
+//  Serial.print(",");
   Serial.print(strID+',');
 
   rfid.PICC_HaltA();

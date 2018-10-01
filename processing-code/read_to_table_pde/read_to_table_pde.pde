@@ -1,7 +1,7 @@
 import processing.serial.*; //<>//
 
 Serial mySerial;
-Table tableS,tableB,tableI,table;
+Table tableS,tableB;
 int a = 0,b;
 String temp = null;
 String t = "nothing";
@@ -14,9 +14,7 @@ void setup() {
   
   tableS = loadTable("student/sid.csv","header");
   tableB = loadTable("books/bid.csv","header");
-  table = new Table();
-  
-  table.addColumn("data");
+ 
 }
 
 void draw(){
@@ -36,16 +34,16 @@ void draw(){
         println("invalid user");
       if(a != 0){
         count = 0;
-        println("Please scan you books");
+        println("please scan you books");
         b = 0;
       } 
     }
+    
     if(a != 0)
       scanbooks(value);
     
     if(count >= 3){
       
-      //println("you issued "+tableS.getInt(row,"number of books")+" books");
       println("you issued" + numberOfBooksUnderID(temp) + " books");
       a = 0;
       count = 0;
@@ -57,7 +55,9 @@ void draw(){
        b++;
      }
   }
-  saveTable(table, "data/new.csv");
+  
+  saveTable(tableS, "student/sid.csv");
+  saveTable(tableB, "books/bid.csv");
 }
 
 int userAuth(String id){
@@ -91,10 +91,9 @@ void scanbooks(String value){
       else if(value.equals(temp) == true && b > 0 ){
         a = 0;
         b = 0;
-        println("the student did not issue any book");
-        int row = updateNumberOfBooks(temp);
-        //println("you issued "+tableS.getInt(row,"number of books")+" books");
-        println("you issued" + numberOfBooksUnderID(temp) + " books");
+        println("the student did not issue any book in this session");
+        
+        println("you issued " + numberOfBooksUnderID(temp) + " books");
         println("lets get to next student");
       }
       else if(value.equals(temp) == true && count > 0){
@@ -102,9 +101,7 @@ void scanbooks(String value){
         b = 0;
         String[] s = booksUnderID(temp);
         
-        
-        //println("you issued "+tableS.getInt(row,"number of books")+" books");
-        println("you issued" + numberOfBooksUnderID(temp) + " books");
+        println("you issued " + numberOfBooksUnderID(temp) + " books");
         println("books issued by you");
         for(int k = 0;k < s.length ; k++){
           if(s[k] != null)
@@ -124,8 +121,6 @@ int issueBook(String book_id,String stud_id){
   
   if(book_id !=null && flag != 0 && book_id.equals(t) == false){
     
-    TableRow newRow = table.addRow();
-    newRow.setString("data", book_id);
     t = book_id;
     count++;
   }
@@ -161,7 +156,7 @@ int checkWhetherBook(String book_id,String stud_id){
 }
 
 int updateNumberOfBooks(String tem){
-  println(tem);
+  
   for(int  i = 0 ;i < tableS.getRowCount(); i++ ){
     if(tem.equals(tableS.getString(i,"rfid")) == true){
       
